@@ -3,6 +3,7 @@ import {
   badGateway,
   badRequest,
   conflict,
+  notFound,
   serverError,
   type ErrorResponse,
   type HttpRequest,
@@ -39,7 +40,11 @@ export abstract class BaseController<TRequestBody, TData> implements Controller<
       return badRequest(error)
     }
 
-    if (error.code === 'HOLIDAY_TRIP_NOT_ALLOWED') {
+    if (error.code === 'TRIP_REQUEST_NOT_FOUND') {
+      return notFound(error)
+    }
+
+    if (error.code === 'TRIP_REQUEST_ALREADY_CANCELED' || error.code === 'HOLIDAY_TRIP_NOT_ALLOWED') {
       return conflict(error)
     }
 
