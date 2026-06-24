@@ -32,7 +32,7 @@
   "packageManager": "pnpm@10.33.0",
   "keywords": [],
   "engines": {
-    "node": ">=24.15 <25"
+    "node": ">=22.16 <25"
   },
   "dependencies": {
     "dotenv": "^16"
