@@ -2,6 +2,7 @@ import { DomainError, type DomainErrorCode } from '../../domain/errors/domain-er
 
 export interface HttpRequest<TBody = unknown> {
   body: TBody
+  params?: Record<string, string>
 }
 
 export interface HttpResponse<TBody = unknown> {
@@ -30,7 +31,17 @@ export const created = <TData>(data: TData): HttpResponse<SuccessResponse<TData>
   },
 })
 
+export const ok = <TData>(data: TData): HttpResponse<SuccessResponse<TData>> => ({
+  statusCode: 200,
+  body: {
+    success: true,
+    data,
+  },
+})
+
 export const badRequest = (error: DomainError): HttpResponse<ErrorResponse> => errorResponse(400, error)
+
+export const notFound = (error: DomainError): HttpResponse<ErrorResponse> => errorResponse(404, error)
 
 export const conflict = (error: DomainError): HttpResponse<ErrorResponse> => errorResponse(409, error)
 
