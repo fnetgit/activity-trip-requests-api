@@ -1,6 +1,7 @@
 import { DomainError } from '#src/shared/domain/errors/domain-error'
 import type { CreateTripRequestInput } from '#src/trip-requests/application/dtos/create-trip-request-input'
 import type { TripRequestOutput } from '#src/trip-requests/application/dtos/trip-request-output'
+import { BaseController } from '#src/trip-requests/infra/controllers/controller'
 import { CreateTripController } from '#src/trip-requests/infra/controllers/create-trip-controller'
 
 const makeCreateTripRequestInput = (): CreateTripRequestInput => ({
@@ -46,6 +47,12 @@ class FakeCreateTripRequestUseCase {
 }
 
 describe('CreateTripController', () => {
+  it('extends the base controller abstraction', () => {
+    const controller = new CreateTripController(new FakeCreateTripRequestUseCase())
+
+    expect(controller).toBeInstanceOf(BaseController)
+  })
+
   it('returns 201 with the created trip request', async () => {
     const output = makeTripRequestOutput()
     const useCase = new FakeCreateTripRequestUseCase(output)
