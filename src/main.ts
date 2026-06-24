@@ -6,7 +6,7 @@ import { env } from '#src/config/env'
 export const bootstrap = (): void => {
   console.log(`[${env.appName}] starting application`)
   console.log(`Environment: ${env.nodeEnv}`)
-  console.log(`Port: ${String(env.appPort)}`)
+  console.log(`Port: ${String(env.port)}`)
 }
 
 const isEntrypoint = (): boolean => {

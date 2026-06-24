@@ -12,7 +12,9 @@ const restoreEnv = (): void => {
 const clearAppEnv = (): void => {
   delete process.env['NODE_ENV']
   delete process.env['APP_NAME']
-  delete process.env['APP_PORT']
+  delete process.env['PORT']
+  delete process.env['DATABASE_URL']
+  delete process.env['HOLIDAYS_API_BASE_URL']
 }
 
 const loadEnvModule = async (): Promise<typeof EnvModule> => {
@@ -44,21 +46,27 @@ describe('environment configuration', () => {
     expect(env).toStrictEqual({
       nodeEnv: 'development',
       appName: 'ts-project',
-      appPort: 3030,
+      port: 3000,
+      databaseUrl: 'postgresql://postgres:postgres@localhost:5432/travel_requests',
+      holidaysApiBaseUrl: 'https://brasilapi.com.br',
     })
   })
 
   it('parses valid environment variables', async () => {
     process.env['NODE_ENV'] = 'production'
     process.env['APP_NAME'] = 'professional-template'
-    process.env['APP_PORT'] = '8080'
+    process.env['PORT'] = '8080'
+    process.env['DATABASE_URL'] = 'postgresql://postgres:postgres@localhost:5432/custom_db'
+    process.env['HOLIDAYS_API_BASE_URL'] = 'https://example.com'
 
     const { env } = await loadEnvModule()
 
     expect(env).toStrictEqual({
       nodeEnv: 'production',
       appName: 'professional-template',
-      appPort: 8080,
+      port: 8080,
+      databaseUrl: 'postgresql://postgres:postgres@localhost:5432/custom_db',
+      holidaysApiBaseUrl: 'https://example.com',
     })
   })
 
@@ -68,11 +76,11 @@ describe('environment configuration', () => {
     await expect(loadEnvModule()).rejects.toThrow('Invalid NODE_ENV: prod')
   })
 
-  it('throws for an invalid APP_PORT', async () => {
+  it('throws for an invalid PORT', async () => {
     process.env['NODE_ENV'] = 'test'
-    process.env['APP_PORT'] = '0'
+    process.env['PORT'] = '0'
 
-    await expect(loadEnvModule()).rejects.toThrow('Invalid APP_PORT')
+    await expect(loadEnvModule()).rejects.toThrow('Invalid PORT')
   })
 })
 
@@ -81,7 +89,7 @@ describe('bootstrap', () => {
     restoreEnv()
     process.env['NODE_ENV'] = 'test'
     process.env['APP_NAME'] = 'ts-project'
-    process.env['APP_PORT'] = '3030'
+    process.env['PORT'] = '3000'
   })
 
   afterEach(() => {
@@ -97,6 +105,6 @@ describe('bootstrap', () => {
 
     expect(logSpy).toHaveBeenNthCalledWith(1, '[ts-project] starting application')
     expect(logSpy).toHaveBeenNthCalledWith(2, 'Environment: test')
-    expect(logSpy).toHaveBeenNthCalledWith(3, 'Port: 3030')
+    expect(logSpy).toHaveBeenNthCalledWith(3, 'Port: 3000')
   })
 })
