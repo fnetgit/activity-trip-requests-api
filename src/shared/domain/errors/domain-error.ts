@@ -1,4 +1,10 @@
-export type DomainErrorCode = 'VALIDATION_ERROR' | 'TRIP_REQUEST_ALREADY_CANCELED'
+export type DomainErrorCode =
+  | 'VALIDATION_ERROR'
+  | 'TRIP_REQUEST_NOT_FOUND'
+  | 'TRIP_REQUEST_ALREADY_CANCELED'
+  | 'HOLIDAY_TRIP_NOT_ALLOWED'
+  | 'HOLIDAYS_API_UNAVAILABLE'
+  | 'INTERNAL_SERVER_ERROR'
 
 export class DomainError extends Error {
   readonly code: DomainErrorCode
