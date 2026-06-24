@@ -16,7 +16,7 @@ green="\033[0;32m"
 white="\033[1;97m"
 grey="\033[0;37m"
 
-regex='^(chore|docs|feat|fix|refactor|test): ([a-z].*[^.])$'
+regex='^(chore|docs|feat|fix|refactor|test)(\([a-z0-9-]+\))?: ([a-z].*[^.])$'
 
 if ! [[ "$message" =~ $regex ]]; then
   echo
@@ -27,7 +27,7 @@ if ! [[ "$message" =~ $regex ]]; then
   echo -e "Your commit message was rejected because it does not follow the expected format."
   echo
   echo -e "${white}commit message: ${red}${message}"
-  echo -e "${white}correct format: ${green}<type>: <subject>"
+  echo -e "${white}correct format: ${green}<type>(<scope>): <subject>"
   echo
   echo -e "${yellow}type:"
   echo -e "${yellow}  ${green}feat     ${grey}A new feature."
