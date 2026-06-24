@@ -99,9 +99,9 @@ describe('bootstrap', () => {
 
   it('logs the startup banner', async () => {
     const logSpy = vi.spyOn(console, 'log').mockImplementation(() => undefined)
-    const { bootstrap } = await loadMainModule()
+    const { logStartupBanner } = await loadMainModule()
 
-    bootstrap()
+    logStartupBanner()
 
     expect(logSpy).toHaveBeenNthCalledWith(1, '[ts-project] starting application')
     expect(logSpy).toHaveBeenNthCalledWith(2, 'Environment: test')

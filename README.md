@@ -1,43 +1,162 @@
-# TypeScript Setup
+# Activity Trip Requests API
 
-Template profissional para projetos **Node.js + TypeScript** com foco em:
+API REST para gerenciamento simplificado de solicitações de viagem institucional.
 
-- TypeScript estrito
-- Node.js moderno com suporte nativo a TypeScript apagável
-- ESM com `NodeNext`
-- alias interno oficial via `package.json#imports`
-- ESLint Flat Config
-- Prettier
+## Equipe
+
+Nome da equipe: Activity Trip Requests API
+
+Integrantes:
+
+- Preencher com o nome completo dos integrantes da equipe.
+
+## Tecnologias
+
+- Node.js
+- TypeScript em modo estrito
+- Fastify
+- Prisma
+- PostgreSQL
+- Docker Compose
 - Vitest
-- Husky
-- lint-staged
-- validação de commit message
-- integração com VS Code
-- build para produção
-- GitHub Actions
-- suporte a Codex com `AGENTS.md`
+- pnpm
 
-## Objetivo
+SGBD escolhido: PostgreSQL.
 
-Este repositório fornece uma base reutilizável para projetos TypeScript com Node.js, organizada para oferecer:
-
-- padronização de código
-- validação automática de qualidade
-- experiência consistente no VS Code
-- pipeline simples para desenvolvimento, testes e build
-- baixo acoplamento a ferramentas externas desnecessárias
+Gerenciador de pacotes adotado: pnpm.
 
 ## Requisitos
 
-- Node.js **24.15+**
+- Node.js 22.16 ou superior
 - Corepack habilitado
-- pnpm **10+**
+- Docker e Docker Compose
 
-## Instalação
+## Configuração
+
+Instale as dependências:
 
 ```bash
-git clone git@github.com:uespi-setups/typescript.git
-cd typescript
-corepack enable
 pnpm install
 ```
+
+Crie o arquivo de ambiente a partir do exemplo:
+
+```bash
+cp .env.example .env
+```
+
+O arquivo `.env.example` já contém valores funcionais para execução local:
+
+```env
+NODE_ENV=development
+PORT=3000
+DATABASE_URL=postgresql://postgres:postgres@localhost:5432/travel_requests
+HOLIDAYS_API_BASE_URL=https://brasilapi.com.br
+```
+
+## Banco de dados
+
+Suba o PostgreSQL com Docker Compose:
+
+```bash
+docker compose up -d
+```
+
+Crie as estruturas do banco e popule os 10 registros iniciais:
+
+```bash
+pnpm run init:db
+```
+
+O script `init:db` executa `prisma db push` e `prisma db seed`. Ele pode ser executado mais de uma vez sem quebrar a aplicação.
+
+## Execução
+
+Ambiente de desenvolvimento:
+
+```bash
+pnpm run dev
+```
+
+Build e execução de produção:
+
+```bash
+pnpm run build
+pnpm start
+```
+
+## Testes
+
+Execute a suíte automatizada:
+
+```bash
+pnpm test
+```
+
+Os testes usam fakes e mocks para não depender da disponibilidade real da BrasilAPI.
+
+## Endpoints
+
+Todas as respostas seguem o formato:
+
+```json
+{
+  "success": true,
+  "data": {}
+}
+```
+
+Erros seguem o formato:
+
+```json
+{
+  "success": false,
+  "error": {
+    "code": "ERROR_CODE",
+    "message": "A clear and objective error message"
+  }
+}
+```
+
+### POST /trip-requests
+
+Cria uma solicitação de viagem.
+
+Exemplo de corpo:
+
+```json
+{
+  "requesterName": "Maria Silva",
+  "origin": "Parnaiba",
+  "destination": "Teresina",
+  "departureAt": "2026-06-24T10:00:00.000Z",
+  "returnAt": "2026-06-24T18:00:00.000Z",
+  "purpose": "Participation in an institutional meeting",
+  "passengerCount": 3
+}
+```
+
+Regras principais:
+
+- `status` inicial sempre `pending`;
+- `returnAt` deve ser posterior ou igual a `departureAt`;
+- `passengerCount` deve ser maior que zero;
+- `departureAt` não pode cair em feriado nacional consultado na BrasilAPI.
+
+### GET /trip-requests
+
+Lista as solicitações cadastradas.
+
+### GET /trip-requests/:id
+
+Consulta uma solicitação específica pelo identificador.
+
+### PATCH /trip-requests/:id/cancel
+
+Cancela uma solicitação existente.
+
+Uma solicitação já cancelada retorna erro `TRIP_REQUEST_ALREADY_CANCELED`.
+
+### GET /holidays/:year
+
+Consulta feriados nacionais de um ano usando a BrasilAPI configurada por `HOLIDAYS_API_BASE_URL`.

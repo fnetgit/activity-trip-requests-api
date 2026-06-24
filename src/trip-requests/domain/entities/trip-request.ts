@@ -28,6 +28,11 @@ export interface CreateTripRequestInput {
   createdAt?: Date | string
 }
 
+export interface RestoreTripRequestInput extends Omit<CreateTripRequestInput, 'createdAt'> {
+  status: string
+  createdAt: Date | string
+}
+
 export interface TripRequestSnapshot {
   id: string
   requesterName: string
@@ -66,6 +71,37 @@ export class TripRequest extends Entity<TripRequestProps> {
         passengerCount: input.passengerCount,
         status: 'pending',
         createdAt: new UtcDateTime(input.createdAt ?? new Date()),
+      },
+      id,
+    )
+  }
+
+  static restore(input: RestoreTripRequestInput, id: UniqueEntityId): TripRequest {
+    TripRequest.validateRequiredTextFields(input)
+    TripRequest.validatePassengerCount(input.passengerCount)
+
+    if (input.status !== 'pending' && input.status !== 'canceled') {
+      throw new DomainError('VALIDATION_ERROR', 'Trip request status is invalid')
+    }
+
+    const departureAt = new UtcDateTime(input.departureAt)
+    const returnAt = new UtcDateTime(input.returnAt)
+
+    if (returnAt.isBefore(departureAt)) {
+      throw new DomainError('VALIDATION_ERROR', 'Return date must be equal to or after departure date')
+    }
+
+    return new TripRequest(
+      {
+        requesterName: input.requesterName,
+        origin: input.origin,
+        destination: input.destination,
+        departureAt,
+        returnAt,
+        purpose: input.purpose,
+        passengerCount: input.passengerCount,
+        status: input.status,
+        createdAt: new UtcDateTime(input.createdAt),
       },
       id,
     )
