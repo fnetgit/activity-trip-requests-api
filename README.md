@@ -55,17 +55,19 @@ HOLIDAYS_API_BASE_URL=https://brasilapi.com.br
 
 ## Banco de dados
 
-Suba o PostgreSQL com Docker Compose:
+Suba apenas o PostgreSQL com Docker Compose:
 
 ```bash
 docker compose up -d
 ```
 
-Crie as estruturas do banco e popule os 10 registros iniciais:
+Depois, no terminal do projeto, crie as estruturas do banco e popule os 10 registros iniciais com o script do pnpm:
 
 ```bash
 pnpm run init:db
 ```
+
+Não execute `docker run init:db`: esse comando faz o Docker procurar uma imagem chamada `init:db`, que não existe neste projeto.
 
 O script `init:db` executa `prisma db push` e `prisma db seed`. Ele pode ser executado mais de uma vez sem quebrar a aplicação.
 
