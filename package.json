@@ -27,8 +27,8 @@
     "test:ci": "vitest run --coverage",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage --passWithNoTests",
-    "check": "corepack pnpm format:check && corepack pnpm lint && corepack pnpm type:check && corepack pnpm test",
-    "check:ci": "corepack pnpm format:check && corepack pnpm lint:ci && corepack pnpm type:check && corepack pnpm test:ci",
+    "check": "corepack pnpm format:check && corepack pnpm prisma:generate && corepack pnpm lint && corepack pnpm type:check && corepack pnpm test",
+    "check:ci": "corepack pnpm format:check && corepack pnpm prisma:generate && corepack pnpm lint:ci && corepack pnpm type:check && corepack pnpm test:ci",
     "prepare": "husky"
   },
   "packageManager": "pnpm@10.33.0",
