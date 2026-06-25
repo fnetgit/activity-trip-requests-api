@@ -1,4 +1,5 @@
 import { DomainError } from '#src/shared/domain/errors/domain-error'
+import type { Validator } from '#src/shared/infra/validation/validator'
 import type { CreateTripRequestInput } from '#src/trip-requests/application/dtos/create-trip-request-input'
 import type { TripRequestOutput } from '#src/trip-requests/application/dtos/trip-request-output'
 import { BaseController } from '#src/trip-requests/infra/controllers/controller'
@@ -46,9 +47,28 @@ class FakeCreateTripRequestUseCase {
   }
 }
 
+class PassThroughValidator<TOutput> implements Validator<TOutput> {
+  validate(input: unknown): TOutput {
+    return input as TOutput
+  }
+}
+
+class FailingValidator<TOutput> implements Validator<TOutput> {
+  constructor(private readonly message: string) {}
+
+  validate(): TOutput {
+    throw new DomainError('VALIDATION_ERROR', this.message)
+  }
+}
+
+const makeCreateTripController = (
+  useCase = new FakeCreateTripRequestUseCase(),
+  validator: Validator<CreateTripRequestInput> = new PassThroughValidator(),
+): CreateTripController => new CreateTripController(useCase, validator)
+
 describe('CreateTripController', () => {
   it('extends the base controller abstraction', () => {
-    const controller = new CreateTripController(new FakeCreateTripRequestUseCase())
+    const controller = makeCreateTripController()
 
     expect(controller).toBeInstanceOf(BaseController)
   })
@@ -56,7 +76,7 @@ describe('CreateTripController', () => {
   it('returns 201 with the created trip request', async () => {
     const output = makeTripRequestOutput()
     const useCase = new FakeCreateTripRequestUseCase(output)
-    const controller = new CreateTripController(useCase)
+    const controller = makeCreateTripController(useCase)
 
     const response = await controller.handle({ body: makeCreateTripRequestInput() })
 
@@ -72,15 +92,58 @@ describe('CreateTripController', () => {
   it('passes the request body to the use case', async () => {
     const input = makeCreateTripRequestInput()
     const useCase = new FakeCreateTripRequestUseCase()
-    const controller = new CreateTripController(useCase)
+    const controller = makeCreateTripController(useCase)
 
     await controller.handle({ body: input })
 
     expect(useCase.receivedInputs).toStrictEqual([input])
   })
 
+  it.each([
+    ['missing body', undefined, 'Trip request payload is required'],
+    [
+      'invalid requesterName',
+      {
+        ...makeCreateTripRequestInput(),
+        requesterName: 123,
+      },
+      'requesterName is required',
+    ],
+    [
+      'invalid departureAt',
+      {
+        ...makeCreateTripRequestInput(),
+        departureAt: null,
+      },
+      'departureAt must be a valid ISO 8601 value',
+    ],
+    [
+      'invalid passengerCount',
+      {
+        ...makeCreateTripRequestInput(),
+        passengerCount: 0,
+      },
+      'Passenger count must be greater than zero',
+    ],
+  ])('validates request body before calling the use case: %s', async (_caseName, body, message) => {
+    const useCase = new FakeCreateTripRequestUseCase()
+    const controller = makeCreateTripController(useCase, new FailingValidator(message))
+
+    await expect(controller.handle({ body })).resolves.toStrictEqual({
+      statusCode: 400,
+      body: {
+        success: false,
+        error: {
+          code: 'VALIDATION_ERROR',
+          message,
+        },
+      },
+    })
+    expect(useCase.receivedInputs).toStrictEqual([])
+  })
+
   it('maps validation errors to 400', async () => {
-    const controller = new CreateTripController(
+    const controller = makeCreateTripController(
       new FakeCreateTripRequestUseCase(
         makeTripRequestOutput(),
         new DomainError('VALIDATION_ERROR', 'Passenger count must be greater than zero'),
@@ -100,7 +163,7 @@ describe('CreateTripController', () => {
   })
 
   it('maps holiday trip errors to 409', async () => {
-    const controller = new CreateTripController(
+    const controller = makeCreateTripController(
       new FakeCreateTripRequestUseCase(
         makeTripRequestOutput(),
         new DomainError('HOLIDAY_TRIP_NOT_ALLOWED', 'Trip requests cannot start on a national holiday'),
@@ -120,7 +183,7 @@ describe('CreateTripController', () => {
   })
 
   it('maps holidays API errors to 502', async () => {
-    const controller = new CreateTripController(
+    const controller = makeCreateTripController(
       new FakeCreateTripRequestUseCase(
         makeTripRequestOutput(),
         new DomainError('HOLIDAYS_API_UNAVAILABLE', 'Holidays API is unavailable'),
@@ -140,7 +203,7 @@ describe('CreateTripController', () => {
   })
 
   it('maps unexpected errors to 500 without exposing internal details', async () => {
-    const controller = new CreateTripController(
+    const controller = makeCreateTripController(
       new FakeCreateTripRequestUseCase(makeTripRequestOutput(), new Error('Database connection failed')),
     )
 
