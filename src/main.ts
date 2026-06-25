@@ -1,11 +1,11 @@
 import { fileURLToPath } from 'node:url'
 
-import { bootstrap } from './main/bootstrap.js'
+import { bootstrap } from '#src/main/bootstrap'
 
-export { bootstrap } from './main/bootstrap.js'
-export { logStartupBanner } from './main/config/startup-banner.js'
-export { buildApp } from './main/factories/http/fastify-app-factory.js'
-export type { BuildAppDependencies } from './main/factories/trip-requests/build-app-dependencies.js'
+export { bootstrap } from '#src/main/bootstrap'
+export { logStartupBanner } from '#src/main/config/startup-banner'
+export { buildApp } from '#src/main/factories/http/fastify-app-factory'
+export type { BuildAppDependencies } from '#src/main/factories/trip-requests/build-app-dependencies'
 
 const isEntrypoint = (): boolean => {
   const entrypoint = process.argv[1]

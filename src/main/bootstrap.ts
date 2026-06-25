@@ -1,7 +1,6 @@
 import { env } from '#src/config/env'
-
-import { logStartupBanner } from './config/startup-banner.js'
-import { buildApp } from './factories/http/fastify-app-factory.js'
+import { logStartupBanner } from '#src/main/config/startup-banner'
+import { buildApp } from '#src/main/factories/http/fastify-app-factory'
 
 export const bootstrap = async (): Promise<void> => {
   logStartupBanner()

@@ -1,15 +1,14 @@
 import type { FastifyInstance } from 'fastify'
 
+import type { BuildAppDependencies } from '#src/main/factories/trip-requests/build-app-dependencies'
+import { makeCancelTripRequestController } from '#src/main/factories/trip-requests/make-cancel-trip-request-controller'
+import { makeCreateTripController } from '#src/main/factories/trip-requests/make-create-trip-controller'
+import { makeGetTripRequestController } from '#src/main/factories/trip-requests/make-get-trip-request-controller'
+import { makeHolidaysGateway } from '#src/main/factories/trip-requests/make-holidays-gateway'
+import { makeListHolidaysController } from '#src/main/factories/trip-requests/make-list-holidays-controller'
+import { makeListTripRequestsController } from '#src/main/factories/trip-requests/make-list-trip-requests-controller'
+import { makeTripRequestRepository } from '#src/main/factories/trip-requests/make-trip-request-repository'
 import { adaptFastifyRoute } from '#src/shared/infra/http/fastify-controller-adapter'
-
-import type { BuildAppDependencies } from '../factories/trip-requests/build-app-dependencies.js'
-import { makeCancelTripRequestController } from '../factories/trip-requests/make-cancel-trip-request-controller.js'
-import { makeCreateTripController } from '../factories/trip-requests/make-create-trip-controller.js'
-import { makeGetTripRequestController } from '../factories/trip-requests/make-get-trip-request-controller.js'
-import { makeHolidaysGateway } from '../factories/trip-requests/make-holidays-gateway.js'
-import { makeListHolidaysController } from '../factories/trip-requests/make-list-holidays-controller.js'
-import { makeListTripRequestsController } from '../factories/trip-requests/make-list-trip-requests-controller.js'
-import { makeTripRequestRepository } from '../factories/trip-requests/make-trip-request-repository.js'
 
 export const registerTripRequestRoutes = (app: FastifyInstance, dependencies: BuildAppDependencies = {}): void => {
   const tripRequestRepository = dependencies.tripRequestRepository ?? makeTripRequestRepository()

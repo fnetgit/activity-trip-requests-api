@@ -1,9 +1,8 @@
 import fastify, { type FastifyInstance } from 'fastify'
 
 import { env } from '#src/config/env'
-
-import { registerTripRequestRoutes } from '../../routes/trip-request-routes.js'
-import type { BuildAppDependencies } from '../trip-requests/build-app-dependencies.js'
+import type { BuildAppDependencies } from '#src/main/factories/trip-requests/build-app-dependencies'
+import { registerTripRequestRoutes } from '#src/main/routes/trip-request-routes'
 
 const getStatusCodeFromError = (error: unknown): number | undefined => {
   if (typeof error !== 'object' || error === null || !('statusCode' in error)) {
