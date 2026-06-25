@@ -4,11 +4,10 @@ API REST para gerenciamento simplificado de solicitações de viagem institucion
 
 ## Equipe
 
-Nome da equipe: Activity Trip Requests API
-
-Integrantes:
-
-- Preencher com o nome completo dos integrantes da equipe.
+- [Francisco Alves Ribeiro Neto](https://github.com/fnetgit)
+- [Fabrício Fontenele Vieira](https://github.com/Fabricio-Fontenele)
+- [Gabriel Oliveira Pinto](https://github.com/gaboliveira-alt)
+- [Ruan Pedro de Araujo Anjos](https://github.com/AnjosR)
 
 ## Tecnologias
 
