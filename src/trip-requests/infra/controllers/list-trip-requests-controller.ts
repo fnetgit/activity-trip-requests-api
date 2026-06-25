@@ -6,7 +6,7 @@ interface ListTripRequestsUseCase {
   execute(): Promise<TripRequestOutput[]>
 }
 
-export class ListTripRequestsController extends BaseController<undefined, TripRequestOutput[]> {
+export class ListTripRequestsController extends BaseController<TripRequestOutput[]> {
   constructor(private readonly listTripRequestsUseCase: ListTripRequestsUseCase) {
     super()
   }

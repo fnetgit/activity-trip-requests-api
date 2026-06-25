@@ -17,7 +17,7 @@ export interface Controller<TRequestBody = unknown, TResponseBody = unknown> {
   handle(request: HttpRequest<TRequestBody>): Promise<HttpResponse<TResponseBody>>
 }
 
-export abstract class BaseController<TRequestBody, TData> implements Controller<
+export abstract class BaseController<TData, TRequestBody = unknown> implements Controller<
   TRequestBody,
   ControllerResponse<TData>
 > {
