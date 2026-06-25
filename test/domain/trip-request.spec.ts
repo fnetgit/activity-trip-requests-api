@@ -75,6 +75,19 @@ describe('TripRequest', () => {
     ).toThrow(new DomainError('VALIDATION_ERROR', message))
   })
 
+  it.each([
+    ['requesterName', undefined, 'requesterName is required'],
+    ['origin', 123, 'origin is required'],
+    ['departureAt', null, 'departureAt must be a valid ISO 8601 value'],
+  ] as const)('rejects invalid field value: %s', (field, value, message) => {
+    expect(() =>
+      TripRequest.create({
+        ...makeTripRequestInput(),
+        [field]: value,
+      }),
+    ).toThrow(new DomainError('VALIDATION_ERROR', message))
+  })
+
   it('cancels a pending trip request', () => {
     const tripRequest = TripRequest.create(makeTripRequestInput())
 

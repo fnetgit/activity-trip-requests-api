@@ -122,6 +122,94 @@ describe('Fastify app', () => {
     await app.close()
   })
 
+  it.each([
+    [
+      'missing requesterName',
+      {
+        ...makeTripRequestBody(),
+        requesterName: undefined,
+      },
+      'requesterName is required',
+    ],
+    [
+      'invalid requesterName type',
+      {
+        ...makeTripRequestBody(),
+        requesterName: 123,
+      },
+      'requesterName is required',
+    ],
+    [
+      'missing departureAt',
+      {
+        ...makeTripRequestBody(),
+        departureAt: undefined,
+      },
+      'departureAt must be a valid ISO 8601 value',
+    ],
+    [
+      'return before departure',
+      {
+        ...makeTripRequestBody(),
+        returnAt: '2026-06-24T09:59:59.999Z',
+      },
+      'Return date must be equal to or after departure date',
+    ],
+    [
+      'invalid passenger count',
+      {
+        ...makeTripRequestBody(),
+        passengerCount: 0,
+      },
+      'Passenger count must be greater than zero',
+    ],
+  ])('returns validation errors for invalid create payloads: %s', async (_caseName, payload, message) => {
+    const app = buildApp({
+      tripRequestRepository: new InMemoryTripRequestRepository(),
+      holidaysGateway: new FakeHolidaysGateway(),
+    })
+
+    const response = await app.inject({
+      method: 'POST',
+      url: '/trip-requests',
+      payload,
+    })
+
+    expect(response.statusCode).toBe(400)
+    expect(response.json<ErrorResponse>()).toStrictEqual({
+      success: false,
+      error: {
+        code: 'VALIDATION_ERROR',
+        message,
+      },
+    })
+
+    await app.close()
+  })
+
+  it('returns a validation error when create payload is missing', async () => {
+    const app = buildApp({
+      tripRequestRepository: new InMemoryTripRequestRepository(),
+      holidaysGateway: new FakeHolidaysGateway(),
+    })
+
+    const response = await app.inject({
+      method: 'POST',
+      url: '/trip-requests',
+    })
+
+    expect(response.statusCode).toBe(400)
+    expect(response.json<ErrorResponse>()).toStrictEqual({
+      success: false,
+      error: {
+        code: 'VALIDATION_ERROR',
+        message: 'Trip request payload is required',
+      },
+    })
+
+    await app.close()
+  })
+
   it('lists holidays through the configured gateway', async () => {
     const app = buildApp({
       tripRequestRepository: new InMemoryTripRequestRepository(),
