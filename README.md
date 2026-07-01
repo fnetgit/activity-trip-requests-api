@@ -30,6 +30,15 @@ Gerenciador de pacotes adotado: pnpm.
 - Corepack habilitado
 - Docker e Docker Compose
 
+Observação sobre versão do Node.js: se `pnpm run dev` exibir um aviso como
+`Unsupported engine: wanted: {"node":">=22.16 <25"} (current: {"node":"v22.14.0", ...})`,
+atualize o Node.js para uma versão compatível com o projeto, por exemplo Node.js 22.16 ou superior
+dentro da linha 22, ou outra versão menor que 25. Depois confirme com:
+
+```bash
+node --version
+```
+
 ## Configuração
 
 Instale as dependências:
