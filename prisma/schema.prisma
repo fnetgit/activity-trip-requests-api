@@ -25,3 +25,13 @@ model TripRequest {
 
   @@map("trip_requests")
 }
+
+model Holiday {
+  date String @id
+  name String
+  type String
+  year Int
+
+  @@index([year])
+  @@map("holidays")
+}

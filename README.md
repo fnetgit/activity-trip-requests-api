@@ -142,7 +142,7 @@ Regras principais:
 - `status` inicial sempre `pending`;
 - `returnAt` deve ser posterior ou igual a `departureAt`;
 - `passengerCount` deve ser maior que zero;
-- `departureAt` não pode cair em feriado nacional consultado na BrasilAPI.
+- `departureAt` não pode cair em feriado nacional espelhado da BrasilAPI no banco de dados.
 
 ### GET /trip-requests
 
@@ -160,4 +160,7 @@ Uma solicitação já cancelada retorna erro `TRIP_REQUEST_ALREADY_CANCELED`.
 
 ### GET /holidays/:year
 
-Consulta feriados nacionais de um ano usando a BrasilAPI configurada por `HOLIDAYS_API_BASE_URL`.
+Consulta feriados nacionais de um ano usando o espelho persistido no banco de dados.
+
+Quando o ano ainda não está espelhado, a API consulta a BrasilAPI configurada por `HOLIDAYS_API_BASE_URL`,
+salva os feriados no banco e reutiliza esses registros nas próximas consultas.
